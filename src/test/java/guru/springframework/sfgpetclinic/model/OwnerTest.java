@@ -14,11 +14,11 @@ class OwnerTest {
 
         assertAll("Properties Test",
                     ()-> assertAll("Person Properties",
-                            ()-> assertEquals("Joseph", owner.getFirstName()),
-                            ()-> assertEquals("Mokenela", owner.getLastName())),
+                            ()-> assertEquals("Joseph", owner.getFirstName(), "First name did not match"),
+                            ()-> assertEquals("Mokenela", owner.getLastName(), "Last name did not match")),
                     ()-> assertAll("Owner Properties",
-                            ()-> assertEquals("Cape Town", owner.getCity()),
-                            ()-> assertEquals("1234567890", owner.getTelephone())
+                            ()-> assertEquals("Cape Town", owner.getCity(), "City did not match"),
+                            ()-> assertEquals("1234567890", owner.getTelephone(), "Telephone did not match")
                 ));
     }
 
