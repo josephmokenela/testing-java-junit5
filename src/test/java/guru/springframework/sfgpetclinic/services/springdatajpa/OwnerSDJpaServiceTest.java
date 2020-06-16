@@ -18,7 +18,7 @@ class OwnerSDJpaServiceTest {
 
     @Test
     void findByLastName() {
-        Owner owner = ownerSDJpaService.findByLastName("Mokenela");
+        //Owner owner = ownerSDJpaService.findByLastName("Mokenela");
 
         //assertThat()
     }
