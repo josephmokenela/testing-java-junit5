@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SpecialitySDJpaServiceTest {
 
-    @Mock
+    @Mock(lenient = true)
     private SpecialtyRepository specialtyRepository;
 
     @InjectMocks
@@ -87,5 +87,66 @@ class SpecialitySDJpaServiceTest {
 
         //then
         then(specialtyRepository).should().delete(any(Speciality.class));
+    }
+
+    @Test
+    public void test_do_throw() {
+        doThrow(new RuntimeException("boom")).when(specialtyRepository).delete(any());
+
+        assertThrows(RuntimeException.class, ()->  specialtyRepository.delete(new Speciality()));
+
+        verify(specialtyRepository).delete(any());
+    }
+
+    @Test
+    public void test_find_by_id_throws() {
+        //given
+        given(specialtyRepository.findById(1L)).willThrow(new RuntimeException("boom"));
+
+        //when
+        assertThrows(RuntimeException.class, ()-> specialitySDJpaService.findById(1L));
+
+        // then
+        then(specialtyRepository).should().findById(anyLong());
+    }
+
+    @Test
+    public void test_save_lambda() {
+        // given
+        final String MATCH_ME = "MATCH_ME";
+        Speciality speciality = new Speciality();
+        speciality.setDescription(MATCH_ME);
+
+        Speciality savedSpecialty = new Speciality();
+        savedSpecialty.setId(1L);
+
+        // need mock to only return on match MATCH_ME string
+        given(specialtyRepository.save(argThat(argument -> argument.getDescription().equals(MATCH_ME)))).willReturn(savedSpecialty);
+
+        // when
+        Speciality returnedSpecialty = specialitySDJpaService.save(speciality);
+
+        // then
+        assertThat(returnedSpecialty.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    public void test_save_lambda_no_match() {
+        // given
+        final String MATCH_ME = "MATCH_ME";
+        Speciality speciality = new Speciality();
+        speciality.setDescription("DO_NOT_MATCH_ME");
+
+        Speciality savedSpecialty = new Speciality();
+        savedSpecialty.setId(1L);
+
+        // need mock to only return on match MATCH_ME string
+        given(specialtyRepository.save(argThat(argument -> argument.getDescription().equals(MATCH_ME)))).willReturn(savedSpecialty);
+
+        // when
+        Speciality returnedSpecialty = specialitySDJpaService.save(speciality);
+
+        // then
+        assertThat(returnedSpecialty).isNull();
     }
 }
